@@ -1,8 +1,22 @@
-"use strict";
+﻿"use strict";
 
 module.exports = function(sequelize, DataTypes) {
   var User = sequelize.define("User", {
-    username: DataTypes.STRING
+    username: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      validate: {
+        is: /[a-z][a-z0-9_]*/
+      }
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
   }, {
     classMethods: {
       associate: function(models) {
@@ -12,8 +26,16 @@ module.exports = function(sequelize, DataTypes) {
         // Tyyliin
         // User.hasMany(models.BlogPost);
       }
+    },
+    instanceMethods: {
+      validPassword: function(password) {
+        if (password === this.password) return true;
+        return false;
+      }
     }
   });
+
+  User.sync();
 
   return User;
 };
