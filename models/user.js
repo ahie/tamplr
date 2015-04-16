@@ -20,11 +20,12 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        // Tässä voi assosioida malleja toisiinsa
-        // http://sequelize.readthedocs.org/en/latest/docs/associations/
-        //
-        // Tyyliin
-        // User.hasMany(models.BlogPost);
+        User.belongsToMany(models.Blog, {as: 'AuthoredBlogs', through: 'BlogAuthors'});
+        User.belongsToMany(models.Blog, {as: 'FollowedBlogs', through: 'BlogFollowers'});
+        User.belongsToMany(models.BlogPost, {as: 'LikedBlogPosts', through: 'Likes'});
+        User.hasMany(models.BlogPost, {as: 'AuthoredPosts'});
+        User.hasMany(models.Comment, {as: 'AuthoredComments'});
+        User.hasOne(models.Blog, {as: 'DefaultBlog'});
       }
     },
     instanceMethods: {
@@ -34,8 +35,6 @@ module.exports = function(sequelize, DataTypes) {
       }
     }
   });
-
-  User.sync();
 
   return User;
 };

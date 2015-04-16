@@ -13,6 +13,7 @@ var BasicStrategy = require('passport-http').BasicStrategy;
 var routes = require('./routes/index');
 var apiHt = require('./routes/api_ht');
 var apiUser = require('./routes/api_user');
+var apiBlog = require('./routes/api_blog');
 
 var app = express();
 
@@ -46,6 +47,7 @@ passport.use(new BasicStrategy(
 app.use('/', routes);
 app.use('/api/ht', apiHt);
 app.use('/api/user', apiUser);
+app.use('/api/blog', apiBlog);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
