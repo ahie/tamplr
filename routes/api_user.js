@@ -85,7 +85,20 @@ router.put('/:username', authenticate, function(req, res, next) {
 });
 
 router.get('/:username/blogs', function(req, res, next) {
-
+  models.User.find(req.params.username)
+  .then(function(user) {
+    if (user)
+      return user.getAuthoredBlogs();
+    else
+      return res.status(404).send();
+  })
+  .then(function(authoredBlogs) {
+    var resJSON = [];
+    authoredBlogs.forEach(function(blog) {
+      resJSON.push({id:blog.get('id')});
+    });
+    return res.status(200).json(resJSON);
+  });
 });
 
 router.get('/:username/follows', function(req, res, next) {

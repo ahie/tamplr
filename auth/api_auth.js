@@ -11,6 +11,6 @@ var apiAuth = function(req, res, next) {
     // Ellei, yritetään vielä Basic-autentikointia.
     basicAuth(req, res, next);
   }
-}
+};
 
 module.exports = apiAuth;

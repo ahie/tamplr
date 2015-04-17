@@ -3,7 +3,14 @@
 module.exports = function(sequelize, DataTypes) {
 
   var BlogPost = sequelize.define("BlogPost", {
-    text: DataTypes.STRING
+    title: DataTypes.STRING,
+    text: DataTypes.STRING,
+    author: DataTypes.STRING,
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    }
   }, {
     classMethods: {
       associate: function(models) {
