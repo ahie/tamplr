@@ -1,9 +1,12 @@
-var express      = require('express');
-var router       = express.Router();
-var models       = require('../models');
-var authenticate = require('../auth/api_auth.js');
+var express        = require('express');
+var router         = express.Router();
+var models         = require('../models');
+var authenticate   = require('../middleware/api_auth.js');
+var blogMiddleware = require('../middleware/blog_middleware.js');
 
-router.get('/:id', function(req, res, next) {
+router.get('/:id',
+blogMiddleware.parseBlog,
+function(req, res, next) {
 
 });
 

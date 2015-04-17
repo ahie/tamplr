@@ -1,50 +1,12 @@
-var express      = require('express');
-var router       = express.Router();
-var models       = require('../models');
-var authenticate = require('../auth/api_auth.js');
+var express        = require('express');
+var router         = express.Router();
+var models         = require('../models');
+var authenticate   = require('../middleware/api_auth.js');
+var blogMiddleware = require('../middleware/blog_middleware.js');
 
-// middleware
-var blogExists = function(req, res, next) {
-  models.Blog
-  .find(req.params.id)
-  .then(function(blog) {
-    if (blog) {
-      req.blog = blog;
-      next();
-    }
-    else
-      res.status(404).json({error: 'NoSuchBlog'});
-  });
-};
-
-var writePermissions = function(req, res, next) {
-
-  req.blog
-  .getAuthors({where: {username: req.user.username}})
-  .then(function(authors) {
-    console.log(authors);
-    if(!authors)
-      return res.status(403).json({error: 'NoPermissions'});
-    if(req.blog.get('isDefaultBlog'))
-      return res.status(403).json({error: 'DefaultBlog'});
-    next();
-  });
-
-};
-
-var userExists = function(req, res, next) {
-  models.User
-  .find(req.params.username)
-  .then(function(user) {
-    if (user) {
-      req.userInstance = user;
-      next();
-    }
-    else
-      return res.status(404).json({error: 'NoSuchUser'});
-  });
-};
-// end middleware
+var parseBlog = blogMiddleware.parseBlog;
+var checkUserPermissions = blogMiddleware.checkUserPermissions; 
+var parseUser = blogMiddleware.parseUser; 
 
 router.post('/', authenticate, function(req, res, next) {
 
@@ -69,7 +31,7 @@ router.post('/', authenticate, function(req, res, next) {
 
 });
 
-router.get('/:id', blogExists, function(req, res, next) {
+router.get('/:id', parseBlog, function(req, res, next) {
 
   return res.status(200).json({
     id:   req.blog.get('id'),
@@ -78,10 +40,10 @@ router.get('/:id', blogExists, function(req, res, next) {
 
 });
 
-router.delete('/:id', 
-  authenticate, 
-  blogExists, 
-  writePermissions, 
+router.delete('/:id',
+  authenticate,
+  parseBlog,
+  checkUserPermissions,
   function(req, res, next) {
 
   req.blog.setAuthors([])
@@ -97,9 +59,9 @@ router.delete('/:id',
 
 router.put('/:id/author/:username',
   authenticate,
-  blogExists,
-  writePermissions,
-  userExists,
+  parseBlog,
+  checkUserPermissions,
+  parseUser,
   function(req, res, next) {
 
   req.userInstance
@@ -112,9 +74,9 @@ router.put('/:id/author/:username',
 
 router.delete('/:id/author/:username',
   authenticate,
-  blogExists,
-  writePermissions,
-  userExists,
+  parseBlog,
+  checkUserPermissions,
+  parseUser,
   function(req, res, next) {
 
   req.userInstance
@@ -125,7 +87,7 @@ router.delete('/:id/author/:username',
 
 });
 
-router.get('/:id/posts', blogExists, function(req, res, next) {
+router.get('/:id/posts', parseBlog, function(req, res, next) {
 
   req.blog
   .getBlogPosts({order: 'createdAt DESC', limit: 10})
@@ -146,8 +108,8 @@ router.get('/:id/posts', blogExists, function(req, res, next) {
 
 router.post('/:id/posts',
   authenticate,
-  blogExists,
-  writePermissions,
+  parseBlog,
+  checkUserPermissions,
   function(req, res, next) {
 
   if(!req.body.title || !req.body.text)

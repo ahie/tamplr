@@ -1,7 +1,7 @@
 var express      = require('express');
 var router       = express.Router();
 var models       = require('../models');
-var authenticate = require('../auth/api_auth.js');
+var authenticate = require('../middleware/api_auth.js');
 
 router.post('/', function(req, res, next) {
 
