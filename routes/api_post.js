@@ -25,7 +25,7 @@ blogMiddleware.parseBlogPost,
 function(req, res, next) {
 
   req.blogPost
-  .getComments({order: 'createdAt DESC', limit: 10})
+  .getComments({order: 'created_at DESC', limit: 10})
   .then(function(comments) {
     var resJSON = [];
     comments.forEach(function(comment) {
