@@ -10,6 +10,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
+    },
+    created: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
     }
   }, {
     classMethods: {

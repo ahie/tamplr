@@ -89,7 +89,7 @@ function(req, res, next) {
 router.get('/:id/posts', parseBlog, function(req, res, next) {
 
   req.blog
-  .getBlogPosts({order: 'created_at DESC', limit: 10})
+  .getBlogPosts({order: 'created DESC', limit: 10})
   .then(function(posts) {
     var resJSON = [];
     posts.forEach(function(post) {
