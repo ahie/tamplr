@@ -100,7 +100,7 @@ router.get('/:id/posts', parseBlog, function(req, res, next) {
         author: post.get('author')
       });
     });
-    res.status(200).json(resJSON);
+    return res.status(200).json(resJSON);
   });
 
 });
