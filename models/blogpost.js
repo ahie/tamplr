@@ -19,9 +19,9 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     instanceMethods: {
-      countLikes: function() {
-        return this.getUserLikes().then(function(likes) {
-          return likes.length;
+      countLikes: function(callback) {
+        this.getUserLikes().then(function(likes) {
+          callback(likes.length);
         });
       }
     }

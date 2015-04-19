@@ -8,12 +8,14 @@ router.get('/:id',
 blogMiddleware.parseBlogPost,
 function(req, res, next) {
 
-  return res.status(200)
-  .json({
-    title: req.blogPost.get('title'),
-    text: req.blogPost.get('text'),
-    author: req.blogPost.get('author'),
-    likes: req.blogPost.countLikes()
+  req.blogPost.countLikes(function(numLikes) {
+    return res.status(200)
+    .json({
+      title: req.blogPost.get('title'),
+      text: req.blogPost.get('text'),
+      author: req.blogPost.get('author'),
+      likes: numLikes
+    });
   });
 
 });
