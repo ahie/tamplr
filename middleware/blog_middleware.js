@@ -39,3 +39,16 @@ exports.parseUser = function(req, res, next) {
       return res.status(404).json({error: 'NoSuchUser'});
   });
 };
+
+exports.parseBlogPost = function(req, res, next) {
+  models.BlogPost
+  .find(req.params.id)
+  .then(function(blogPost) {
+    if (blogPost) {
+      req.blogPost = blogPost;
+      next();
+    }
+    else
+      return res.status(404).json({error: 'NoSuchBlogPost'});
+  });
+};

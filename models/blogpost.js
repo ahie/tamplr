@@ -17,6 +17,13 @@ module.exports = function(sequelize, DataTypes) {
         BlogPost.belongsToMany(models.User, {as: 'UserLikes', through: 'Likes'});
         BlogPost.hasMany(models.Comment, {as: 'Comments'});
       }
+    },
+    instanceMethods: {
+      countLikes: function() {
+        return this.getUserLikes().then(function(likes) {
+          return likes.length;
+        });
+      }
     }
   });
 

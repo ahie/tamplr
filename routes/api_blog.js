@@ -22,7 +22,6 @@ router.post('/', authenticate, function(req, res, next) {
   })
   .then(function(blog) {
     req.user.addAuthoredBlog(blog);
-    req.user.addFollowedBlog(blog);
     return res.status(201).json({id: blog.get('id')});
   })
   .catch(function(err) {
@@ -41,10 +40,10 @@ router.get('/:id', parseBlog, function(req, res, next) {
 });
 
 router.delete('/:id',
-  authenticate,
-  parseBlog,
-  checkUserPermissions,
-  function(req, res, next) {
+authenticate,
+parseBlog,
+checkUserPermissions,
+function(req, res, next) {
 
   req.blog.setAuthors([])
   .then(function() {
@@ -58,11 +57,11 @@ router.delete('/:id',
 });
 
 router.put('/:id/author/:username',
-  authenticate,
-  parseBlog,
-  checkUserPermissions,
-  parseUser,
-  function(req, res, next) {
+authenticate,
+parseBlog,
+checkUserPermissions,
+parseUser,
+function(req, res, next) {
 
   req.userInstance
   .addAuthoredBlog(req.blog)
@@ -73,11 +72,11 @@ router.put('/:id/author/:username',
 });
 
 router.delete('/:id/author/:username',
-  authenticate,
-  parseBlog,
-  checkUserPermissions,
-  parseUser,
-  function(req, res, next) {
+authenticate,
+parseBlog,
+checkUserPermissions,
+parseUser,
+function(req, res, next) {
 
   req.userInstance
   .removeAuthoredBlog(req.blog)
@@ -107,10 +106,10 @@ router.get('/:id/posts', parseBlog, function(req, res, next) {
 });
 
 router.post('/:id/posts',
-  authenticate,
-  parseBlog,
-  checkUserPermissions,
-  function(req, res, next) {
+authenticate,
+parseBlog,
+checkUserPermissions,
+function(req, res, next) {
 
   if(!req.body.title || !req.body.text)
     return res.status(400).json({error: 'MissingData'});
@@ -133,7 +132,16 @@ router.post('/:id/posts',
 
 });
 
-router.get('/:id/followers', function(req, res, next) {
+router.get('/:id/followers', parseBlog, function(req, res, next) {
+
+  req.blog.getFollowers()
+  .then(function(followers) {
+    var resJSON = [];
+    followers.forEach(function(follower) {
+      resJSON.push({username: follower.get('username')});
+    });
+    return res.status(200).json(resJSON);
+  });
 
 });
 

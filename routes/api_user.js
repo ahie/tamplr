@@ -1,7 +1,12 @@
-var express      = require('express');
-var router       = express.Router();
-var models       = require('../models');
-var authenticate = require('../middleware/api_auth.js');
+var express        = require('express');
+var router         = express.Router();
+var models         = require('../models');
+var authenticate   = require('../middleware/api_auth.js');
+var blogMiddleware = require('../middleware/blog_middleware.js');
+
+var parseUser     = blogMiddleware.parseUser;
+var parseBlog     = blogMiddleware.parseBlog;
+var parseBlogPost = blogMiddleware.parseBlogPost;
 
 router.post('/', function(req, res, next) {
 
@@ -22,7 +27,6 @@ router.post('/', function(req, res, next) {
       .then(function(defaultBlog) {
         user.setDefaultBlog(defaultBlog);
         user.addAuthoredBlog(defaultBlog);
-        user.addFollowedBlog(defaultBlog);
     });
 
     return res.status(201).json(user);
@@ -95,29 +99,87 @@ router.get('/:username/blogs', function(req, res, next) {
   .then(function(authoredBlogs) {
     var resJSON = [];
     authoredBlogs.forEach(function(blog) {
-      resJSON.push({id:blog.get('id')});
+      resJSON.push({id: blog.get('id')});
     });
     return res.status(200).json(resJSON);
   });
 });
 
-router.get('/:username/follows', function(req, res, next) {
+router.get('/:username/follows', parseUser, function(req, res, next) {
+
+  req.userInstance.getFollowedBlogs()
+  .then(function(blogs) {
+    var resJSON = [];
+    blogs.forEach(function(blog) {
+      resJSON.push({id: blog.get('id')});
+    });
+    return res.status(200).json(resJSON);
+  });
 
 });
 
-router.put('/:username/follows/:id', function(req, res, next) {
+router.put('/:username/follows/:id',
+authenticate,
+parseBlog,
+parseUser,
+function(req, res, next) {
+
+  if (req.userInstance.username !== req.user.username)
+    return res.status(403).send();
+
+  req.userInstance.addFollowedBlog(req.blog);
+  res.status(200).send();
 
 });
 
-router.delete('/:username/follows/:id', function(req, res, next) {
+router.delete('/:username/follows/:id',
+authenticate,
+parseBlog,
+parseUser,
+function(req, res, next) {
+
+  if (req.userInstance.username !== req.user.username)
+    return res.status(403).send();
+
+  req.userInstance
+  .removeFollowedBlog(req.blog)
+  .then(function() {
+    res.status(200).send();
+  });
 
 });
 
-router.put('/:username/likes/:id', function(req, res, next) {
+router.put('/:username/likes/:id',
+authenticate,
+parseBlogPost,
+parseUser,
+function(req, res, next) {
+
+  if (req.userInstance.username !== req.user.username)
+    return res.status(403).send();
+
+  req.userInstance
+  .addLikedBlogPost(req.blogPost)
+  .then(function() {
+    return res.status(200).send();
+  });
 
 });
 
-router.delete('/:username/likes/:id', function(req, res, next) {
+router.delete('/:username/likes/:id',
+authenticate,
+parseBlogPost,
+parseUser,
+function(req, res, next) {
+
+  if (req.userInstance.username !== req.user.username)
+    return res.status(403).send();
+
+  req.userInstance
+  .removeLikedBlogPost(req.blogPost)
+  .then(function() {
+    return res.status(200).send();
+  });
 
 });
 
