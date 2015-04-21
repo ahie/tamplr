@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var flash = require('connect-flash');
 
 var models = require('./models');
 
@@ -24,8 +25,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -39,8 +39,10 @@ passport.use(new BasicStrategy(
     models.User
     .find({where: { username: username }})
     .then(function(user) {
-      if (!user) { return done(null, false); }
-      if (!user.validPassword(password)) { return done(null, false); }
+      if (!user)
+        return done(null, false);
+      if (!user.validPassword(password))
+        return done(null, false);
       return done(null, user);
     });
   })
@@ -52,14 +54,11 @@ passport.use(new LocalStrategy(
     .find({where: {username: username}})
     .then(function(user) {
       if(!user)
-        return done(null, false, { message: 'Incorrect username.' });
+        return done(null, false);
       if(!user.validPassword(password))
-        return done(null, false, { message: 'Incorrect password.' });
+        return done(null, false);
       return done(null, user);
     })
-    .catch(function(err) {
-      return done(err);
-    });
   })
 );
 
@@ -114,7 +113,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
-var server = app.listen(process.env.PORT || 3000);
 
 module.exports = app;

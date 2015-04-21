@@ -5,10 +5,12 @@ html
   body
     .container
       include navbar.jade
-      form(action='/api/user/', method='post').form-signin
+      div#error-message
+      form(action='/api/user/', method='post')#signup.form-signin
         h2.form-signin-heading Sign up
-        input.form-control(name='name', type='text', placeholder='Real name', required)
-        input.form-control(name='username', type='text', pattern='[a-z][a-z0-9_]*', placeholder='Desired username', required, autofocus)
-        input.form-control(name='password', type='password', placeholder='Desired password', required)
+        input#nameField.form-control(name='name', type='text', placeholder='Real name', required)
+        input#usernameField.form-control(name='username', type='text', pattern='[a-z][a-z0-9_]*', placeholder='Desired username', required, autofocus)
+        input#passwordField.form-control(name='password', type='password', placeholder='Desired password', required)
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign up
       include foot.jade
+    script(src='javascripts/signup.js')

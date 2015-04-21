@@ -9,7 +9,7 @@ exports.parseBlog = function(req, res, next) {
       next();
     }
     else
-      res.status(404).json({error: 'NoSuchBlog'});
+      res.status(404).json({error: 'No such blog exists'});
   });
 };
 
@@ -19,9 +19,9 @@ exports.checkUserPermissions = function(req, res, next) {
   .hasAuthor(req.user)
   .then(function(result) {
     if(!result)
-      return res.status(403).json({error: 'NoPermissions'});
+      return res.status(403).json({error: 'You do not have permission to alter this blog'});
     if(req.blog.get('isDefaultBlog'))
-      return res.status(403).json({error: 'DefaultBlog'});
+      return res.status(403).json({error: 'Default blog can not be altered'});
     next();
   });
 
@@ -36,7 +36,7 @@ exports.parseUser = function(req, res, next) {
       next();
     }
     else
-      return res.status(404).json({error: 'NoSuchUser'});
+      return res.status(404).json({error: 'No such user exists'});
   });
 };
 
@@ -49,6 +49,6 @@ exports.parseBlogPost = function(req, res, next) {
       next();
     }
     else
-      return res.status(404).json({error: 'NoSuchBlogPost'});
+      return res.status(404).json({error: 'No such blog exists'});
   });
 };

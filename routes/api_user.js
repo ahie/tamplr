@@ -15,7 +15,7 @@ router.post('/', function(req, res, next) {
   var name     = req.body.name;
 
   if (!username || !password || !name)
-    return res.status(400).json({error: 'InvalidInput'});
+    return res.status(400).json({error: 'Invalid input'});
 
   models.User
     .create({
@@ -37,13 +37,18 @@ router.post('/', function(req, res, next) {
   })
   .catch(function(err) {
     if (err.errors) {
-      if (err.errors[0].type === 'unique violation')
+      var resJSON;
+      if (err.errors[0].type === 'unique violation') {
         res.status(409);
-      else
+        resJSON = {error: 'Username has already been taken'};
+      }
+      else {
         res.status(400);
-      return res.json({error: 'InvalidInput'});
+        resJSON = {error: 'Invalid input'};
+      }
+      return res.json(resJSON);
     }
-    return res.status(500).json({error: 'ServerError'});
+    return res.status(500).json({error: 'Server error'});
   });
 });
 
@@ -58,7 +63,7 @@ router.get('/:username', function(req, res, next) {
       return res.json({ username: user.username, name: user.name });
     }
     else {
-      return res.status(404).json({error: 'UserNotFound'});
+      return res.status(404).json({error: 'User not found'});
     }
   });
 
@@ -67,12 +72,12 @@ router.get('/:username', function(req, res, next) {
 router.put('/:username', authenticate, function(req, res, next) {
 
   if (!!req.body.name && !!req.body.password)
-    return res.status(404).json({error: 'InvalidInput'});
+    return res.status(404).json({error: 'Invalid input'});
 
   var username = req.params.username;
 
   if (username != req.user.get('username'))
-    return res.status(403).json({error: 'NoAccess'});
+    return res.status(403).json({error: 'No access'});
 
   var query = {where: {username: username}};
 
@@ -86,7 +91,7 @@ router.put('/:username', authenticate, function(req, res, next) {
       return res.status(200).end();
     }
     else {
-      return res.status(404).json({error: 'UserNotFound'});
+      return res.status(404).json({error: 'User not found'});
     }
   });
 });
