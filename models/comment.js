@@ -3,7 +3,7 @@
 module.exports = function(sequelize, DataTypes) {
 
   var Comment = sequelize.define("Comment", {
-    text: DataTypes.STRING,
+    text: DataTypes.TEXT,
     author: DataTypes.STRING,
     id: {
       type: DataTypes.INTEGER,

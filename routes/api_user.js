@@ -14,6 +14,9 @@ router.post('/', function(req, res, next) {
   var password = req.body.password;
   var name     = req.body.name;
 
+  if (!username || !password || !name)
+    return res.status(400).json({error: 'InvalidInput'});
+
   models.User
     .create({
       username: username,

@@ -4,7 +4,7 @@ module.exports = function(sequelize, DataTypes) {
 
   var BlogPost = sequelize.define("BlogPost", {
     title: DataTypes.STRING,
-    text: DataTypes.STRING,
+    text: DataTypes.TEXT,
     author: DataTypes.STRING,
     id: {
       type: DataTypes.INTEGER,

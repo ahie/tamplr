@@ -1,5 +1,7 @@
 ﻿"use strict";
 
+var crypto = require('crypto');
+
 module.exports = function(sequelize, DataTypes) {
   var User = sequelize.define("User", {
     username: {
@@ -13,9 +15,17 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false
     },
+    salt: DataTypes.STRING,
     password: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      set: function(val) {
+        var salt = crypto.randomBytes(64).toString('base64');
+        this.setDataValue('salt', salt);
+        this.setDataValue('password',
+          crypto.pbkdf2Sync(val, salt, 4096, 512, 'sha256')
+          .toString('base64'));
+      }
     }
   }, {
     classMethods: {
@@ -30,7 +40,10 @@ module.exports = function(sequelize, DataTypes) {
     },
     instanceMethods: {
       validPassword: function(password) {
-        if (password === this.password) return true;
+        var hash = crypto.pbkdf2Sync(password, 
+          this.getDataValue('salt'), 4096, 512, 'sha256')
+          .toString('base64');
+        if (hash === this.password) return true;
         return false;
       }
     }

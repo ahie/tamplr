@@ -7,9 +7,10 @@
         li.active(role='presentation')
           a(href='signin') sign in
       - else
-        h3 #{user.username}
         li.active(role='presentation')
           a(href='logout') log out
       li.active(role='presentation')
-          a(href='') home
+          a(href='/') home
     h3.tamplr-logo tamplr
+    - if (user)
+      p Logged in as #{user.username}
