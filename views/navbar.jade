@@ -1,0 +1,15 @@
+.header.clearfix
+  nav
+    ul.nav.nav-pills.pull-right
+      - if (!user)
+        li.active(role='presentation')
+          a(href='signup') sign up
+        li.active(role='presentation')
+          a(href='signin') sign in
+      - else
+        h3 #{user.username}
+        li.active(role='presentation')
+          a(href='logout') log out
+      li.active(role='presentation')
+          a(href='') home
+    h3.tamplr-logo tamplr

@@ -4,13 +4,15 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 var models = require('./models');
 
 var passport = require('passport');
 var BasicStrategy = require('passport-http').BasicStrategy;
+var LocalStrategy = require('passport-local').Strategy;
 
-var routes = require('./routes/index');
+var frontend = require('./routes/frontend');
 var apiHt = require('./routes/api_ht');
 var apiUser = require('./routes/api_user');
 var apiBlog = require('./routes/api_blog');
@@ -20,7 +22,7 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -28,9 +30,8 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({secret: 'keyboard cat'}));
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(passport.initialize());
 
 passport.use(new BasicStrategy(
   { realm: "tamplr" },
@@ -45,7 +46,39 @@ passport.use(new BasicStrategy(
   })
 );
 
-app.use('/', routes);
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    models.User
+    .find({where: {username: username}})
+    .then(function(user) {
+      if(!user)
+        return done(null, false, { message: 'Incorrect username.' });
+      if(!user.validPassword(password))
+        return done(null, false, { message: 'Incorrect password.' });
+      return done(null, user);
+    })
+    .catch(function(err) {
+      return done(err);
+    });
+  })
+);
+
+passport.serializeUser(function(user, done) {
+  done(null, user.get('username'));
+});
+
+passport.deserializeUser(function(id, done) {
+  models.User
+  .find(id)
+  .then(function(user) {
+    done(null, user);
+  });
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/', frontend);
 app.use('/api/ht', apiHt);
 app.use('/api/user', apiUser);
 app.use('/api/blog', apiBlog);

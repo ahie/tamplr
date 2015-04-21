@@ -29,7 +29,7 @@ router.post('/', function(req, res, next) {
         user.addAuthoredBlog(defaultBlog);
     });
 
-    return res.status(201).json(user);
+    return res.status(201).end();
 
   })
   .catch(function(err) {
@@ -80,7 +80,7 @@ router.put('/:username', authenticate, function(req, res, next) {
       if (req.body.password)
         user.setDataValue('password', req.body.password);
       user.save();
-      return res.status(200).send();
+      return res.status(200).end();
     }
     else {
       return res.status(404).json({error: 'UserNotFound'});
@@ -94,7 +94,7 @@ router.get('/:username/blogs', function(req, res, next) {
     if (user)
       return user.getAuthoredBlogs();
     else
-      return res.status(404).send();
+      return res.status(404).end();
   })
   .then(function(authoredBlogs) {
     var resJSON = [];
@@ -125,10 +125,10 @@ parseUser,
 function(req, res, next) {
 
   if (req.userInstance.username !== req.user.username)
-    return res.status(403).send();
+    return res.status(403).end();
 
   req.userInstance.addFollowedBlog(req.blog);
-  res.status(200).send();
+  res.status(200).end();
 
 });
 
@@ -139,12 +139,12 @@ parseUser,
 function(req, res, next) {
 
   if (req.userInstance.username !== req.user.username)
-    return res.status(403).send();
+    return res.status(403).end();
 
   req.userInstance
   .removeFollowedBlog(req.blog)
   .then(function() {
-    res.status(200).send();
+    res.status(200).end();
   });
 
 });
@@ -156,12 +156,12 @@ parseUser,
 function(req, res, next) {
 
   if (req.userInstance.username !== req.user.username)
-    return res.status(403).send();
+    return res.status(403).end();
 
   req.userInstance
   .addLikedBlogPost(req.blogPost)
   .then(function() {
-    return res.status(200).send();
+    return res.status(200).end();
   });
 
 });
@@ -173,12 +173,12 @@ parseUser,
 function(req, res, next) {
 
   if (req.userInstance.username !== req.user.username)
-    return res.status(403).send();
+    return res.status(403).end();
 
   req.userInstance
   .removeLikedBlogPost(req.blogPost)
   .then(function() {
-    return res.status(200).send();
+    return res.status(200).end();
   });
 
 });

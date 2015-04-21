@@ -25,7 +25,7 @@ router.post('/', authenticate, function(req, res, next) {
     return res.status(201).json({id: blog.get('id')});
   })
   .catch(function(err) {
-    next(new Error('Failed creating new blog'));
+    return res.status(500).end();
   });
 
 });
@@ -51,7 +51,7 @@ function(req, res, next) {
   })
   .then(function() {
     req.blog.destroy();
-    return res.status(200).send();
+    return res.status(200).end();
   });
 
 });
@@ -66,7 +66,7 @@ function(req, res, next) {
   req.userInstance
   .addAuthoredBlog(req.blog)
   .then(function() {
-    return res.status(200).send();
+    return res.status(200).end();
   });
 
 });
@@ -81,7 +81,7 @@ function(req, res, next) {
   req.userInstance
   .removeAuthoredBlog(req.blog)
   .then(function() {
-    return res.status(200).send();
+    return res.status(200).end();
   });
 
 });

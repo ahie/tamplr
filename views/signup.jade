@@ -1,0 +1,14 @@
+doctype html
+html
+  include head.jade
+  link(href='stylesheets/signin.css', rel='stylesheet')
+  body
+    .container
+      include navbar.jade
+      form(action='/api/user/', method='post').form-signin
+        h2.form-signin-heading Sign up
+        input.form-control(name='name', type='text', placeholder='Real name', required)
+        input.form-control(name='username', type='text', pattern='[a-z][a-z0-9_]*', placeholder='Desired username', required, autofocus)
+        input.form-control(name='password', type='password', placeholder='Desired password', required)
+        button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign up
+      include foot.jade
