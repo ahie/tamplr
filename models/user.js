@@ -24,7 +24,7 @@ module.exports = function(sequelize, DataTypes) {
         this.setDataValue('salt', salt);
         this.setDataValue('password',
           crypto.pbkdf2Sync(val, salt, 4096, 256, 'sha256')
-          .toString('base64'));
+          .toString('hex'));
       }
     }
   }, {
@@ -42,7 +42,7 @@ module.exports = function(sequelize, DataTypes) {
       validPassword: function(password) {
         var hash = crypto.pbkdf2Sync(password, 
           this.getDataValue('salt'), 4096, 256, 'sha256')
-          .toString('base64');
+          .toString('hex');
         if (hash === this.password) return true;
         return false;
       }
