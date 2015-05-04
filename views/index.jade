@@ -4,4 +4,10 @@ html
   body
     .container
       include navbar.jade
+      div#new-posts
+        h3 Newest blog posts
+        ul#posts
+          - for (var i in blogPosts)
+            li #{blogPosts[i].get('title')}
       include foot.jade
+    script(src='javascripts/home.js')

@@ -5,11 +5,12 @@ var passport = require('passport');
 var models = require('../models');
 
 router.get('/', function(req, res, next) {
-  models.User.findAll().then(function(users) {
+  models.BlogPost
+  .findAll({order: 'created DESC', limit: 10})
+  .then(function(blogPosts) {
     res.render('index', {
       user: req.user,
-      host: req.headers.host,
-      users: users
+      blogPosts: blogPosts
     });
   });
 });
