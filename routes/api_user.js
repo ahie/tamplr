@@ -48,7 +48,7 @@ router.post('/', function(req, res, next) {
       }
       return res.json(resJSON);
     }
-    return res.status(500).json({error: 'Server error'});
+    return res.status(500).json({error: err});
   });
 });
 
