@@ -17,10 +17,10 @@ module.exports = function(sequelize, DataTypes) {
     },
     salt: DataTypes.STRING,
     password: {
-      type: DataTypes.STRING(256),
+      type: DataTypes.STRING,
       allowNull: false,
       set: function(val) {
-        var salt = crypto.randomBytes(64).toString('base64');
+        var salt = crypto.randomBytes(64).toString('hex');
         this.setDataValue('salt', salt);
         this.setDataValue('password',
           crypto.pbkdf2Sync(val, salt, 4096, 64, 'sha512')

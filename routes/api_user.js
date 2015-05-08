@@ -32,7 +32,7 @@ router.post('/', function(req, res, next) {
         user.addAuthoredBlog(defaultBlog);
     });
 
-    return res.status(201).end();
+    return res.status(201).json();
 
   })
   .catch(function(err) {

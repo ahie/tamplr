@@ -16,7 +16,7 @@ var loginOnSuccess = function(username, password) {
   form.submit();
 };
 
-var displayErrorMessage = function(message) {
+var displayMessage = function(message) {
 
   $('#error-message')
   .text(message);
@@ -35,11 +35,11 @@ $('#signup')
     type: 'post',
     data: $('#signup').serialize(),
     dataType: 'json',
-    success: function(res) {
-      loginOnSuccess(username, password);
-    },
-    error: function(res) {
-      displayErrorMessage(res.responseJSON.error);
+    statusCode: {
+      201: function() { loginOnSuccess(username, password); },
+      400: function() { displayMessage('Invalid Input'); },
+      409: function() { displayMessage('Username already taken'); },
+      500: function() { displayMessage('Server error'); }
     }
   });
 });
