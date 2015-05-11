@@ -1,0 +1,22 @@
+doctype html
+html
+  include head.jade
+  body
+    .container
+      include navbar.jade
+      div#user-info
+        p Current name: #{name}
+      form#change-info.form-horizontal
+        div.control-group
+          label(for='newname').control-label New name
+          div.controls
+            input(name='name', type='text', placeholder='New name')#newname
+        div.control-group
+          label(for='newpassword').control-label New password
+          div.controls
+            input(name='password', type='password', placeholder='New password')#newpassword
+        div.control-group
+          div.controls
+            button(type='submit').btn.btn-primary Change profile information
+      include foot.jade
+    script(src='javascripts/profile.js')

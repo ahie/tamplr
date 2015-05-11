@@ -15,6 +15,22 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.get('/profile', function(req, res, next) {
+  if(!req.user) {
+    var err = new Error('Not authorized');
+    err.status = 403;
+    return next(err);
+  } // 404?
+  models.User
+  .find(req.user)
+  .then(function(user) {
+    res.render('profile', {
+      name: user.name,
+      user: req.user
+    });
+  });
+});
+
 router.get('/signin', function(req, res, next) {
   if (req.user)
     req.logout();
