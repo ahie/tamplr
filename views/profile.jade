@@ -5,8 +5,9 @@ html
     .container
       include navbar.jade
       div#user-info
-        p Current name: #{name}
-      form#change-info.form-horizontal
+        p Current name: #{user.name}
+        p Current username: #{user.username}
+      form(url='/api/user/' + user.username)#change-info.form-horizontal
         div.control-group
           label(for='newname').control-label New name
           div.controls

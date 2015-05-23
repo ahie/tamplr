@@ -8,6 +8,28 @@ html
         h3 Newest blog posts
         ul#posts
           - for (var i in blogPosts)
-            li #{blogPosts[i].get('title')}
+            li
+              h4
+                a(href='/blogpost/' + blogPosts[i].id) #{blogPosts[i].title}
+              p by author #{blogPosts[i].author}
+              p in blog #{blogPosts[i].inBlog}
+      - if(user)
+        div#user-info
+          h3 Followed blogs
+          ul#followed-blogs
+            - for (var i in followedBlogs)
+              li
+                h4
+                  a(href='/blog/' + followedBlogs[i].id) #{followedBlogs[i].name}
+          h3 Author in blogs
+          ul#authored-blogs
+            - for (var i in authoredBlogs)
+              li
+                h4
+                  a(href='/blog/' + authoredBlogs[i].id) #{authoredBlogs[i].name}
+        h3 Create a new blog
+        form#new-blog
+          input(name='name', type='text', placeholder='New blog name', required)
+          button(type='submit').btn.btn-primary Create
       include foot.jade
     script(src='javascripts/home.js')

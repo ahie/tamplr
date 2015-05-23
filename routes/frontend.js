@@ -5,14 +5,34 @@ var passport = require('passport');
 var models = require('../models');
 
 router.get('/', function(req, res, next) {
+
+  var renderVars = {};
+
   models.BlogPost
   .findAll({order: 'created DESC', limit: 10})
   .then(function(blogPosts) {
-    res.render('index', {
-      user: req.user,
-      blogPosts: blogPosts
+
+    renderVars.blogPosts = blogPosts;
+    if (!req.user) return res.render('index', renderVars);
+
+    renderVars.user = req.user;
+    req.user.getAuthoredBlogs()
+    .then(function(authoredBlogs) {
+
+      renderVars.authoredBlogs = authoredBlogs;
+      req.user.getFollowedBlogs()
+      .then(function(followedBlogs) {
+
+        renderVars.followedBlogs = followedBlogs;
+        console.log(renderVars);
+        res.render('index', renderVars);
+
+      });
+
     });
-  });
+
+  })
+
 });
 
 router.get('/profile', function(req, res, next) {
@@ -20,7 +40,7 @@ router.get('/profile', function(req, res, next) {
     var err = new Error('Not authorized');
     err.status = 403;
     return next(err);
-  } // 404?
+  }
   models.User
   .find(req.user)
   .then(function(user) {
@@ -29,6 +49,31 @@ router.get('/profile', function(req, res, next) {
       user: req.user
     });
   });
+});
+
+router.get('/blogpost/:id', function(req, res, next) {
+
+  var blogp;
+  models.BlogPost
+  .find(req.params.id)
+  .then(function(blogPost) {
+    if(!blogPost) {
+      var err = new Error('Blog post not found');
+      err.status = 404;
+      return next(err);
+    }
+    blogp = blogPost;
+    return blogPost.getUserLikes();
+  })
+  .then(function(userLikes) {
+    if(!req.user) {
+     res.render('blogpost', {
+        blogPost: blogp,
+        likes: userLikes.length
+      });
+    }
+  });
+
 });
 
 router.get('/signin', function(req, res, next) {

@@ -6,6 +6,7 @@ module.exports = function(sequelize, DataTypes) {
     title: DataTypes.STRING,
     text: DataTypes.TEXT,
     author: DataTypes.STRING,
+    inBlog: DataTypes.STRING,
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,

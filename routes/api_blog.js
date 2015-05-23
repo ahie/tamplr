@@ -119,6 +119,7 @@ function(req, res, next) {
     title:  req.body.title,
     text:   req.body.text,
     author: req.user.username,
+    inBlog: req.blog.get('name')
   })
   .then(function(blogPost) {
     req.blog.addBlogPost(blogPost)

@@ -72,17 +72,16 @@ router.get('/:username', function(req, res, next) {
 
 router.put('/:username', authenticate, function(req, res, next) {
 
-  if (!!req.body.name && !!req.body.password)
-    return res.status(404).json({error: 'Invalid input'});
+  if (!req.body.name && !req.body.password)
+    return res.status(400).json({error: 'Invalid input'});
 
   var username = req.params.username;
 
   if (username != req.user.get('username'))
     return res.status(403).json({error: 'No access'});
 
-  var query = {where: {username: username}};
-
-  models.User.find(query).then(function(user) {
+  models.User.find(username)
+  .then(function(user) {
     if (user) {
       if (req.body.name)
         user.setDataValue('name', req.body.name);
