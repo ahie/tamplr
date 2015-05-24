@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
+var authenticate   = require('../middleware/api_auth.js');
 
 var models = require('../models');
 
@@ -24,7 +25,6 @@ router.get('/', function(req, res, next) {
       .then(function(followedBlogs) {
 
         renderVars.followedBlogs = followedBlogs;
-        console.log(renderVars);
         res.render('index', renderVars);
 
       });
@@ -35,41 +35,52 @@ router.get('/', function(req, res, next) {
 
 });
 
-router.get('/profile', function(req, res, next) {
-  if(!req.user) {
-    var err = new Error('Not authorized');
-    err.status = 403;
-    return next(err);
-  }
-  models.User
-  .find(req.user)
-  .then(function(user) {
-    res.render('profile', {
-      name: user.name,
-      user: req.user
-    });
-  });
+router.get('/profile', 
+authenticate,
+function(req, res, next) {
+
+  res.render('profile', { user: req.user });
+
 });
 
 router.get('/blogpost/:id', function(req, res, next) {
 
-  var blogp;
   models.BlogPost
   .find(req.params.id)
   .then(function(blogPost) {
-    if(!blogPost) {
-      var err = new Error('Blog post not found');
-      err.status = 404;
-      return next(err);
+
+    blogPost.getBlog()
+    .then(function(blog) {
+      res.render('blogpost', {
+        postId: req.params.id,
+        blog: blog,
+        user: req.user 
+      });
+
+    });
+
+  });
+
+});
+
+router.get('/blog/:id', function(req, res, next) {
+
+  models.Blog
+  .find(req.params.id)
+  .then(function(blog) {
+    if (req.user) {
+      blog.hasAuthor(req.user)
+      .then(function(result) {
+        res.render('blog', {
+          authorized: result,
+          user: req.user,
+          blog: blog
+        });
+      });
     }
-    blogp = blogPost;
-    return blogPost.getUserLikes();
-  })
-  .then(function(userLikes) {
-    if(!req.user) {
-     res.render('blogpost', {
-        blogPost: blogp,
-        likes: userLikes.length
+    else {
+      res.render('blog', {
+        blog: blog
       });
     }
   });

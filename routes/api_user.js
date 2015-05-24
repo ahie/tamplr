@@ -84,9 +84,9 @@ router.put('/:username', authenticate, function(req, res, next) {
   .then(function(user) {
     if (user) {
       if (req.body.name)
-        user.setDataValue('name', req.body.name);
+        user.name = req.body.name;
       if (req.body.password)
-        user.setDataValue('password', req.body.password);
+        user.password = req.body.password;
       user.save();
       return res.status(200).end();
     }
@@ -157,6 +157,18 @@ function(req, res, next) {
 
 });
 
+router.get('/:username/follows/:id',
+parseBlog,
+parseUser,
+function(req, res, next) {
+
+  req.userInstance.hasFollowedBlog(req.blog)
+  .then(function(result) {
+    return res.status(200).json({hasFollowed: result});
+  })
+
+});
+
 router.put('/:username/likes/:id',
 authenticate,
 parseBlogPost,
@@ -187,6 +199,18 @@ function(req, res, next) {
   .removeLikedBlogPost(req.blogPost)
   .then(function() {
     return res.status(200).end();
+  });
+
+});
+
+router.get('/:username/likes/:id',
+parseBlogPost,
+parseUser,
+function(req, res, next) {
+
+  req.userInstance.hasLikedBlogPost(req.blogPost)
+  .then(function(result) {
+    return res.status(200).json({hasLiked: result});
   });
 
 });

@@ -4,8 +4,27 @@ html
   body
     .container
       include navbar.jade
-      h3 #{blogPost.title}
-      p #{blogPost.text}
-      p Number of likes #{likes}
+      h3#post-title
+      pre#post-text
+      div#post-likes
+      - if (user)
+        button#like-button.btn.btn-primary
+      h4 Comments:
+      ul#post-comments
+      input(type='checkbox')#polling-checkbox
+      | Automatically update comments
+      - if (user)
+        h4 Add a new comment:
+        textarea(rows=4, cols=40, name='text', form='post-comment', placeholder='Comment text')
+        form#post-comment
+          button(type='submit').btn.btn-primary Comment
       include foot.jade
-    script(src='javascripts/blogpost.js')
+    script(type='text/javascript').
+      var postId = #{postId};
+      var blogName = '#{blog.name}';
+      var blogId = '#{blog.id}';
+    script(src='/javascripts/blogpost.js')
+    - if(user)
+      script(type='text/javascript').
+        var username = '#{user.username}';
+      script(src='/javascripts/blogpost-user.js')

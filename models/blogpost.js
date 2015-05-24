@@ -21,6 +21,7 @@ module.exports = function(sequelize, DataTypes) {
       associate: function(models) {
         BlogPost.belongsToMany(models.User, {as: 'UserLikes', through: 'Likes'});
         BlogPost.hasMany(models.Comment, {as: 'Comments'});
+        BlogPost.belongsTo(models.Blog);
       }
     },
     instanceMethods: {

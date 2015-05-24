@@ -1,0 +1,31 @@
+doctype html
+html
+  include head.jade
+  body
+    .container
+      include navbar.jade
+      h2#blog-title #{blog.name}
+      h3 Newest posts:
+      ul#blogposts
+      - if (user)
+        button#follow-button.btn.btn-primary
+      - if (authorized === true)
+        h3 Write a new blog post
+        form#new-blogpost
+          input(type='text', name='title', placeholder='Post title', required)
+          textarea(name='text', rows=7, form='new-blogpost', placeholder='Blog text...', required, style='width: 100%;')
+          button(type='submit').btn.btn-primary Submit
+        h3 Grant/Revoke user permissions
+        input(type='text', name='username', placeholder='Username')#permission-username
+        button#grant-permission.btn.btn-primary Grant permission
+        button#revoke-permission.btn.btn-primary Revoke permission
+      include foot.jade
+    script(type='text/javascript').
+      var blogId = '#{blog.id}';
+    script(src='/javascripts/blog.js')
+    - if (user)
+      script(type='text/javascript').
+        var username = '#{user.username}';
+      script(src='/javascripts/blog-user.js')
+    - if (authorized === true)
+      script(src='/javascripts/blog-authorized.js')

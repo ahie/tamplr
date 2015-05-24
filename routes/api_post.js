@@ -40,6 +40,39 @@ function(req, res, next) {
 
 });
 
+// Same as above, without limit
+router.get('/:id/comments/all',
+blogMiddleware.parseBlogPost,
+function(req, res, next) {
+
+  req.blogPost
+  .getComments({order: 'created DESC'})
+  .then(function(comments) {
+    var resJSON = [];
+    comments.forEach(function(comment) {
+      resJSON.push({
+        id: comment.get('id'),
+        text: comment.get('text'),
+        author: comment.get('author')
+      });
+    });
+    return res.status(200).json(resJSON);
+  });
+
+});
+
+router.get('/:id/comments/count',
+blogMiddleware.parseBlogPost,
+function(req, res, next) {
+
+  req.blogPost
+  .getComments()
+  .then(function(comments) {
+    return res.status(200).json({comments: comments.length});
+  });
+
+})
+
 router.post('/:id/comments',
 authenticate,
 blogMiddleware.parseBlogPost,
@@ -58,5 +91,17 @@ function(req, res, next) {
   });
 
 });
+
+router.get('/:id/likes/count',
+blogMiddleware.parseBlogPost,
+function(req, res, next) {
+
+  req.blogPost
+  .getUserLikes()
+  .then(function(likes) {
+    return res.status(200).json({likes: likes.length});
+  });
+
+})
 
 module.exports = router;
